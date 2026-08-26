@@ -1,29 +1,29 @@
-public class Solution {
+class Solution {
     public int[] topKFrequent(int[] nums, int k) {
-        Map<Integer, Integer> count = new HashMap<>();
-        List<Integer>[] freq = new List[nums.length + 1];
+       // Step 1: Count frequency of each number
+       Map<Integer, Integer> count = new HashMap<>();
+       for (int n : nums) {
+        count.put(n, count.getOrDefault(n, 0) + 1);
+       }
 
-        for (int i = 0; i < freq.length; i++) {
-            freq[i] = new ArrayList<>();
-        }
+       // Step 2: Build Min-Heap based on frequency map counts
+       PriorityQueue<Integer> heap = new PriorityQueue<>(
+        (a, b) -> count.get(a) - count.get(b)
+       );
 
-        for (int n : nums) {
-            count.put(n, count.getOrDefault(n, 0) + 1);
+       // Step 3: Keep only the top K elements in the heap
+       for (int key : count.keySet()) {
+        heap.add(key);
+        if (heap.size() > k) {
+            heap.poll(); // Eviccts the element with the lowest frequency 
         }
-        for (Map.Entry<Integer, Integer> entry : count.entrySet()) {
-            freq[entry.getValue()].add(entry.getKey());
-        }
+       }
 
-        int[] res = new int[k];
-        int index = 0;
-        for (int i = freq.length - 1; i > 0 && index < k; i--) {
-            for (int n : freq[i]) {
-                res[index++] = n;
-                if (index == k) {
-                    return res;
-                }
-            }
-        }
-        return res;
+       // Step 4: Extract the elements into an array
+       int[] res = new int[k];
+       for (int i = 0; i < k; i++) {
+        res[i] = heap.poll();
+       }
+       return res;
     }
 }
